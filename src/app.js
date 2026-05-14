@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
+import authRoutes from './routes/authRoutes.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+
 const app = express();
 
 // Middlewares
@@ -27,13 +30,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// TODO: Routes will be mounted here in Day 2-5
-// app.use('/api/user', userRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
-// app.use('/api/orders', ordersRoutes);
-// app.use('/api/products', productsRoutes);
-// app.use('/api/suppliers', suppliersRoutes);
-// app.use('/api/customers', customersRoutes);
+// Routes
+app.use('/api/user', authRoutes);
 
 // 404 handler
 app.use((req, res, next) => {
@@ -43,14 +41,7 @@ app.use((req, res, next) => {
   });
 });
 
-// Global error handler (Day 2'de detaylandıracağız)
-app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    status: 'error',
-    message: err.message || 'Internal Server Error',
-  });
-});
+// Global error handler (must be last)
+app.use(errorHandler);
 
 export default app;
