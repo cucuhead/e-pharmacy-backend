@@ -1,7 +1,7 @@
 import { User } from '../models/User.js';
-import { generateTokenPair } from '../utils/jwt.js';
-import { createError } from '../utils/httpError.js';
 
+import { createError } from '../utils/httpError.js';
+import { verifyRefreshToken, generateTokenPair } from '../utils/jwt.js';
 // POST /api/user/login
 export const login = async (req, res, next) => {
   try {
@@ -63,6 +63,41 @@ export const getUserInfo = async (req, res, next) => {
         name: req.user.name,
         email: req.user.email,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// POST /api/user/refresh
+export const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    let payload;
+    try {
+      payload = verifyRefreshToken(refreshToken);
+    } catch {
+      return next(createError(401, 'Invalid or expired refresh token'));
+    }
+
+    const user = await User.findById(payload.userId);
+    if (!user) {
+      return next(createError(401, 'User not found'));
+    }
+
+    // Stored token user'da kayıtlı mı? (logout sonrası null oluyordu)
+    if (user.refreshToken !== refreshToken) {
+      return next(createError(401, 'Refresh token does not match'));
+    }
+
+    // Yeni token çifti üret (rotation — eskisi geçersiz olur)
+    const tokens = generateTokenPair(user);
+    user.refreshToken = tokens.refreshToken;
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: tokens,
     });
   } catch (error) {
     next(error);
