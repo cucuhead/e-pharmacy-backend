@@ -4,7 +4,12 @@ import morgan from 'morgan';
 
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import customersRoutes from './routes/customersRoutes.js';
 
+import ordersRoutes from './routes/ordersRoutes.js';
+import productsRoutes from './routes/productsRoutes.js';
+import suppliersRoutes from './routes/suppliersRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 const app = express();
 
 // Middlewares
@@ -32,6 +37,11 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.use('/api/user', authRoutes);
+app.use('/api/customers', customersRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/suppliers', suppliersRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
 app.use((req, res, next) => {
