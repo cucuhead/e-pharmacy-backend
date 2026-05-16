@@ -14,14 +14,14 @@ const ALLOWED_SORT = new Set([
 // "?sort=-price" → { price: -1 }
 // Default: en yeni önce (orderDate desc)
 const parseSort = (sortParam) => {
-  if (!sortParam) return { orderDate: -1 };
+  if (!sortParam) return { orderDate: -1, _id: 1 };
 
   const desc = sortParam.startsWith('-');
   const field = desc ? sortParam.slice(1) : sortParam;
 
-  if (!ALLOWED_SORT.has(field)) return { orderDate: -1 };
+  if (!ALLOWED_SORT.has(field)) return { orderDate: -1, _id: 1 };
 
-  return { [field]: desc ? -1 : 1 };
+  return { [field]: desc ? -1 : 1, _id: 1 };
 };
 
 // GET /api/orders?name=...&status=...&sort=...&page=1&limit=10
