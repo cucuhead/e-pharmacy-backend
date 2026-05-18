@@ -1,26 +1,128 @@
-# E-Pharmacy Backend
+# E-Pharmacy — Backend API
 
-E-Pharmacy Admin Dashboard backend API. Built with Express, MongoDB, and JWT.
+RESTful API for the E-Pharmacy admin dashboard. Built with Express and MongoDB, it handles authentication, dashboard statistics, and CRUD for products, suppliers, orders, and customers.
 
-## Stack
+## Live API
 
-- Node.js + Express 5
-- MongoDB + Mongoose
-- JWT (access + refresh tokens)
-- Joi validation
-- bcryptjs password hashing
+- **Base URL:** https://e-pharmacy-backend-a20z.onrender.com
+- **Health check:** https://e-pharmacy-backend-a20z.onrender.com/api/health
 
-## Setup
+> The API is hosted on Render's free tier. The first request after a period of inactivity may take 30–50 seconds while the service wakes up.
 
-\`\`\`bash
+## Tech Stack
+
+- **Runtime:** Node.js (ES Modules)
+- **Framework:** Express 5
+- **Database:** MongoDB Atlas with Mongoose
+- **Auth:** JWT (access + refresh tokens), bcrypt for password hashing
+- **Security:** helmet, CORS
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or newer
+- A MongoDB connection string (MongoDB Atlas recommended)
+
+### Installation
+
+```bash
+git clone https://github.com/cucuhead/e-pharmacy-backend.git
+cd e-pharmacy-backend
 npm install
-cp .env.example .env
-# Fill in MONGODB_URI and JWT secrets
-npm run dev
-\`\`\`
+```
 
-Server runs on `http://localhost:5000`.
+### Environment Variables
 
-## Endpoints
+Create a `.env` file in the project root:
 
-See `docs/api.md` (coming in Day 6).
+```dotenv
+PORT=5000
+NODE_ENV=development
+
+JWT_ACCESS_SECRET=your-access-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+CLIENT_URL=http://localhost:5173
+
+MONGODB_URI=your-mongodb-connection-string
+```
+
+| Variable | Description |
+|---|---|
+| `PORT` | Port the server listens on (local only — the host assigns its own in production) |
+| `NODE_ENV` | `development` or `production` |
+| `JWT_ACCESS_SECRET` | Secret used to sign short-lived access tokens |
+| `JWT_REFRESH_SECRET` | Secret used to sign refresh tokens |
+| `JWT_ACCESS_EXPIRES_IN` | Access token lifetime (e.g. `15m`) |
+| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime (e.g. `7d`) |
+| `CLIENT_URL` | Frontend origin allowed by CORS |
+| `MONGODB_URI` | MongoDB Atlas connection string |
+
+### Running
+
+```bash
+npm run dev     # development with auto-reload (nodemon)
+npm start       # production
+```
+
+The server starts at `http://localhost:5000`.
+
+## API Endpoints
+
+All routes are prefixed with `/api`.
+
+### Auth
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/user/login` | Log in, returns access + refresh tokens | No |
+| POST | `/user/refresh` | Exchange a refresh token for new tokens | No |
+| GET | `/user/logout` | Log the current user out | Yes |
+| GET | `/user/user-info` | Get the authenticated user's info | Yes |
+
+### Dashboard
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/dashboard` | Statistics, recent customers, income/expenses | Yes |
+
+### Products
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/products` | Paginated product list (supports name filter) | Yes |
+| POST | `/products` | Create a product | Yes |
+| PUT | `/products/:id` | Update a product | Yes |
+| DELETE | `/products/:id` | Delete a product | Yes |
+
+### Suppliers
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/suppliers` | Paginated supplier list (supports name filter) | Yes |
+| POST | `/suppliers` | Create a supplier | Yes |
+| PUT | `/suppliers/:id` | Update a supplier | Yes |
+
+### Orders & Customers
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/orders` | Paginated order list (supports name filter) | Yes |
+| GET | `/customers` | Paginated customer list (supports name filter) | Yes |
+
+### Utility
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/health` | Service health check | No |
+
+## Authentication
+
+The API uses a two-token JWT scheme. The access token is short-lived (15 minutes) and the refresh token is long-lived (7 days). Protected routes require an `Authorization: Bearer <accessToken>` header. When an access token expires, the client exchanges its refresh token at `/user/refresh` for a fresh pair.
+
+## Deployment
+
+The API is deployed on **Render**. Build command: `npm install`. Start command: `node src/server.js`. Environment variables are configured in the Render dashboard. The MongoDB Atlas cluster allows connections from any IP so the host can reach it.
