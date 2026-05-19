@@ -9,6 +9,11 @@ RESTful API for the E-Pharmacy admin dashboard. Built with Express and MongoDB, 
 
 > The API is hosted on Render's free tier. The first request after a period of inactivity may take 30–50 seconds while the service wakes up.
 
+## Project Resources
+
+- **Frontend repository:** https://github.com/cucuhead/e-pharmacy-frontend
+- **Live app:** https://e-pharmacy-frontend-eight.vercel.app
+
 ## Tech Stack
 
 - **Runtime:** Node.js (ES Modules)
@@ -95,8 +100,8 @@ All routes are prefixed with `/api`.
 |---|---|---|---|
 | GET | `/products` | Paginated product list (supports name filter) | Yes |
 | POST | `/products` | Create a product | Yes |
-| PUT | `/products/:id` | Update a product | Yes |
-| DELETE | `/products/:id` | Delete a product | Yes |
+| PUT | `/products/:productId` | Update a product | Yes |
+| DELETE | `/products/:productId` | Delete a product | Yes |
 
 ### Suppliers
 
@@ -104,14 +109,20 @@ All routes are prefixed with `/api`.
 |---|---|---|---|
 | GET | `/suppliers` | Paginated supplier list (supports name filter) | Yes |
 | POST | `/suppliers` | Create a supplier | Yes |
-| PUT | `/suppliers/:id` | Update a supplier | Yes |
+| PUT | `/suppliers/:supplierId` | Update a supplier | Yes |
 
-### Orders & Customers
+### Orders
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
-| GET | `/orders` | Paginated order list (supports name filter) | Yes |
+| GET | `/orders` | Paginated order list (supports name filter and sorting) | Yes |
+
+### Customers
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
 | GET | `/customers` | Paginated customer list (supports name filter) | Yes |
+| GET | `/customers/:customerId` | Single customer details with order history | Yes |
 
 ### Utility
 
@@ -122,6 +133,10 @@ All routes are prefixed with `/api`.
 ## Authentication
 
 The API uses a two-token JWT scheme. The access token is short-lived (15 minutes) and the refresh token is long-lived (7 days). Protected routes require an `Authorization: Bearer <accessToken>` header. When an access token expires, the client exchanges its refresh token at `/user/refresh` for a fresh pair.
+
+## Error Handling
+
+The API returns appropriate HTTP status codes (`200`, `400`, `401`, `403`, `404`, `500`) with descriptive JSON error messages. Incoming data is validated before being saved to the database.
 
 ## Deployment
 
