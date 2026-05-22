@@ -138,6 +138,10 @@ The API uses a two-token JWT scheme. The access token is short-lived (15 minutes
 
 The API returns appropriate HTTP status codes (`200`, `400`, `401`, `403`, `404`, `500`) with descriptive JSON error messages. Incoming data is validated before being saved to the database.
 
+## Project Status
+
+This project was built as a 10-day capstone assignment and is now complete. The API covers all endpoints required by the technical specification and is deployed in production. Future improvements could include rate limiting, request logging, automated tests, and a refresh-token rotation strategy.
+
 ## Deployment
 
 The API is deployed on **Render**. Build command: `npm install`. Start command: `node src/server.js`. Environment variables are configured in the Render dashboard. The MongoDB Atlas cluster allows connections from any IP so the host can reach it.
